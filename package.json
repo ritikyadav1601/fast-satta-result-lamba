@@ -2,18 +2,16 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "devDependencies": {
-        "axios": "^1.6.4",
-        "laravel-vite-plugin": "^1.0.0",
-        "tailwindcss": "^3.4.14",
-        "vite": "^5.0.0"
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "import:sql": "node scripts/import-sql-dump.mjs",
+        "upload:mongodb": "node scripts/upload-mongodb.mjs"
     },
     "dependencies": {
-        "@popperjs/core": "^2.11.8",
-        "bootstrap": "^5.3.3",
-        "flowbite": "^2.5.2"
+        "mongodb": "^7.5.0",
+        "next": "^15.5.0",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0"
     }
 }
