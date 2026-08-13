@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { adminPrimaryData, saveAdminResult, saveFirstKhaiwal, saveKhaiwalChart } from '@/lib/admin-primary';
+import {isAdminSession} from '@/lib/admin-auth';
 
-async function allowed() { return (await cookies()).get('fsk_admin')?.value === 'authenticated'; }
+async function allowed() { return isAdminSession((await cookies()).get('fsk_admin')?.value); }
 const unavailable = error => NextResponse.json({ error: error.message || 'Primary database is unavailable.' }, { status: 503 });
 
 export async function GET(request) {

@@ -1,0 +1,1 @@
+export default function manifest(){return {name:'Fast Satta Result',short_name:'Fast Satta Result',description:'Live Satta Result records and historical charts.',start_url:'/',display:'standalone',background_color:'#ffffff',theme_color:'#ffd800',lang:'en-IN'}}

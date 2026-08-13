@@ -1,7 +1,8 @@
 # Fast Satta Result — Next.js
 
-This project is a standalone Next.js application. It uses a local JSON data
-store, so PHP, Laravel, Composer, and MySQL are not required.
+This project is a standalone Next.js application backed by MongoDB, with
+`data/site.json` as the primary-data fallback. PHP, Laravel, Composer, and
+MySQL are not required at runtime.
 
 ## Development
 
@@ -14,12 +15,17 @@ Open `http://localhost:3000`.
 
 ## Production
 
-```bash
-npm run build
-npm start
-```
+Build with `npm run build`, then deploy the generated standalone server or let
+your Next.js hosting provider run the project. The health-check endpoint is
+`/api/health`.
 
-Copy `.env.example` to `.env.local` to customize the local administrator login.
+Configure every variable from `.env.example` in the production hosting
+environment. Never commit `.env.local`. Use a unique admin password and a
+random `ADMIN_SESSION_SECRET` of at least 24 characters.
+
+The production domain is `https://fast-satta-result.com`. Next.js generates
+`/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, canonical metadata, and
+security headers automatically.
 
 ## Import the legacy database
 
