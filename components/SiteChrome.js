@@ -16,4 +16,4 @@ export function Footer({ settings }) {
     <section className="somelinks"><div className="container"><div className="row"><div className="col-md-12 text-center"><ul><li style={{color:'#ffd800',padding:0,fontWeight:700}}>!! DISCLAIMER - {settings.disclaimer}</li></ul></div></div></div></section></footer>;
 }
 
-export default async function SiteChrome({ children, active }) { const {settings}=await getData(); return <><Header active={active} settings={settings}/>{children}<Footer settings={settings}/></>; }
+export default async function SiteChrome({ children, active, settings: providedSettings }) { const settings=providedSettings||(await getData()).settings; return <><Header active={active} settings={settings}/>{children}<Footer settings={settings}/></>; }
