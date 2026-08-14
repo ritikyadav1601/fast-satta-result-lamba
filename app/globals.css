@@ -18,7 +18,7 @@ a { color: inherit; }
 .admin-main { padding:28px; overflow:auto; }
 .admin-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px #0001; padding:22px; margin-bottom:20px; }
 .admin-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
-.khaiwal-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.khaiwal-admin-grid .admin-card{border:2px solid #e0b400}.khaiwal-admin-grid h2{margin-top:0}
+.khaiwal-admin-grid{display:grid;grid-template-columns:minmax(0,700px);gap:20px}.khaiwal-admin-grid .admin-card{border:2px solid #e0b400}.khaiwal-admin-grid h2{margin-top:0}
 .admin-form input,.admin-form textarea,.admin-form select { padding:10px; border:1px solid #ccd2dc; border-radius:7px; }
 .admin-date-filter{display:flex;align-items:center;gap:10px;font-weight:700}.admin-date-filter input{padding:8px;border:1px solid #ccd2dc;border-radius:7px}
 .admin-form button,.primary-button { background:#111827; color:#fff; border:0; border-radius:7px; padding:10px 16px; cursor:pointer; }
@@ -28,7 +28,7 @@ a { color: inherit; }
 .login-card { width:min(380px,90vw); background:#fff; padding:28px; border-radius:16px; }
 .login-card input { width:100%; padding:11px; margin:7px 0 14px; box-sizing:border-box; }
 .promo-gradient { box-sizing:border-box; flex:1 1 auto; min-height:1px; padding:1rem .5rem; border:dashed red; background:linear-gradient(rgb(255,216,0),rgb(255,255,255)); border-radius:20px; font-weight:bold; margin-top:5px; margin-bottom:5px; text-align:center; }
-.second-khaiwal-card .khaiwal-number{font-size:1.25rem;letter-spacing:1px}
+.khaiwal-number{font-size:1.25rem;letter-spacing:1px}
 .seo-content{padding:40px 18px;background:#fff;color:#333;text-align:left;line-height:1.7}.seo-content .container{max-width:1100px;margin:0 auto}.seo-content h1,.seo-content h2,.seo-content h3{color:#161616}.seo-content h1{font-size:34px}.seo-content h2{margin-top:32px;font-size:27px}.seo-content h3{margin-top:24px;font-size:21px}.seo-content li{margin-bottom:10px}.seo-market-table{width:100%;min-width:680px;border-collapse:collapse}.seo-market-table th,.seo-market-table td{padding:12px;border:1px solid #777;text-align:left}.seo-market-table th{background:#111;color:#fff}.seo-market-table a{color:#001d8f;text-decoration:underline}
 .channel-panel { box-sizing:border-box; position:relative; display:flex; flex-direction:column; max-width:100%; margin:.5rem auto; background:#fff; overflow:hidden; border:0; border-radius:.25rem; }
 .channel-yellow { flex:1 1 auto; min-height:1px; padding:1.25rem; border:1px dashed red; background:#ffd800; border-radius:20px; font-weight:bold; text-align:center; text-transform:uppercase; }
@@ -63,6 +63,7 @@ a { color: inherit; }
 @media(max-width:700px){.admin-grid{grid-template-columns:1fr}.admin-nav{display:flex;overflow:auto}.admin-nav button{white-space:nowrap}.admin-main{padding:14px}}
 @media(max-width:700px){.khaiwal-admin-grid{grid-template-columns:1fr}}
 .homepage-date-title{margin:0;font-size:2em;font-weight:700;line-height:1.2}.result-chart-title{margin:.67em 0;font-size:2em;font-weight:700;line-height:1.2}
+.pending-result-gif{display:inline-block;width:40px;height:40px;object-fit:contain;vertical-align:middle}
 @media(max-width:700px){
   .chart-date-band{padding:24px 14px}.chart-date-band h1{font-size:28px;line-height:1.15}
   .chart-intro{padding:29px 18px}.chart-intro h1{font-size:17px;line-height:1.9}
