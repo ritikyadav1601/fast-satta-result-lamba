@@ -23,6 +23,11 @@ Configure every variable from `.env.example` in the production hosting
 environment. Never commit `.env.local`. Use a unique admin password and a
 random `ADMIN_SESSION_SECRET` of at least 24 characters.
 
+The restricted result panel is available at `/result-admin/login`. Configure
+`RESTRICTED_ADMIN_USERNAME`, `RESTRICTED_ADMIN_PASSWORD`, and a unique
+`RESTRICTED_ADMIN_SESSION_SECRET` of at least 24 characters. This account can
+read and update only Prem Nagar and Jammu City results.
+
 The production domain is `https://fast-satta-result.com`. Next.js generates
 `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, canonical metadata, and
 security headers automatically.
