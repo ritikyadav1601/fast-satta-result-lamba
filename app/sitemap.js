@@ -1,7 +1,7 @@
 import {getData} from '@/lib/store';
 import {gameSlug} from '@/lib/game-slug';
 
-const siteUrl='https://fast-satta-result.com';
+const siteUrl='https://www.fast-satta-result.com';
 const page=(path,priority,changeFrequency='weekly')=>({url:`${siteUrl}${path}`,lastModified:new Date(),changeFrequency,priority});
 
 export default async function sitemap(){
