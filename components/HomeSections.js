@@ -347,9 +347,18 @@ export function ResultsAndCharts({ settings, games, results }) {
   const gamesByMonthlyName = new Map(
     games.map((game) => [monthlyChartName(game), game])
   );
-  const chartGames = monthlyChartOrder
+  const prioritizedChartGames = monthlyChartOrder
     .map((name) => gamesByMonthlyName.get(name))
     .filter(Boolean);
+  const prioritizedChartGameIds = new Set(
+    prioritizedChartGames.map((game) => String(game.id))
+  );
+  const chartGames = [
+    ...prioritizedChartGames,
+    ...sorted.filter(
+      (game) => !prioritizedChartGameIds.has(String(game.id))
+    ),
+  ];
   const days = Array.from({ length: now.getDate() }, (_, i) => ({
     label:
       String(i + 1).padStart(2, "0") +
