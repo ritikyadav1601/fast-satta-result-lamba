@@ -87,7 +87,9 @@ const todayResultDisplay = (results, game) =>
     <WaitResult />
   );
 const circleGames = (games, results, date) => {
-  const eligible = orderedGames(games.filter((game) => !isDesawar(game)));
+  const eligible = orderedGames(
+    games.filter((game) => !isDesawar(game) && !isSecondaryUpper(game))
+  );
   const declared = eligible.filter((game) => hasResult(results, game, date));
   const lastDeclared = declared.at(-1);
   const start = lastDeclared
