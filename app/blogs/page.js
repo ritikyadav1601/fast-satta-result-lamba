@@ -1,3 +1,12 @@
-import Link from 'next/link'; import SiteChrome from '@/components/SiteChrome'; import {getData} from '@/lib/store';
-export const dynamic='force-dynamic';
-export default async function Blogs(){const {blogs}=await getData();return <SiteChrome><main className="content-page"><h1>Blogs</h1>{blogs.length?<div className="blog-grid">{blogs.filter(b=>b.published!==false).map(b=><article className="blog-card" key={b.id}><h2><Link href={`/blog/${b.slug}`}>{b.title}</Link></h2><p>{b.category}</p></article>)}</div>:<div className="empty-state">No blog posts have been  published.</div>}</main></SiteChrome>}
+import SiteChrome from '@/components/SiteChrome';
+import BlogCards from '@/components/BlogCards';
+import { getData } from '@/lib/store';
+
+export const dynamic = 'force-dynamic';
+export const metadata = { title: 'Latest Blogs | Fast Satta Result', description: 'Read the latest updates, guides, and result information from Fast Satta Result.', alternates: { canonical: '/blogs' } };
+
+export default async function Blogs() {
+  const { blogs } = await getData();
+  const ordered = [...blogs].sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+  return <SiteChrome active="blogs"><main className="content-page blogs-page"><header className="blog-page-header"><p>News &amp; guides</p><h1>Latest Blogs</h1><span>Helpful updates and information from Fast Satta Result.</span></header><BlogCards blogs={ordered} /></main></SiteChrome>;
+}

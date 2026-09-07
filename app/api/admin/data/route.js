@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { adminPrimaryData, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
+import { adminPrimaryData, deleteAdminBlog, saveAdminBlog, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
 import {isAdminSession} from '@/lib/admin-auth';
 
 async function allowed() { return isAdminSession((await cookies()).get('fsk_admin')?.value); }
@@ -17,6 +17,16 @@ export async function POST(request) {
   try {
     if (collection === 'results') return NextResponse.json(await saveAdminResult(item));
     if (collection === 'khaiwal1') return NextResponse.json(await saveFirstKhaiwal(item));
+    if (collection === 'blogs') return NextResponse.json(await saveAdminBlog(item));
     return NextResponse.json({ error: 'This admin panel only manages approved results and Khaiwal settings.' }, { status: 403 });
+  } catch (error) { return unavailable(error); }
+}
+
+export async function DELETE(request) {
+  if (!await allowed()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { collection, id } = await request.json();
+  try {
+    if (collection === 'blogs' && id != null) return NextResponse.json(await deleteAdminBlog(id));
+    return NextResponse.json({ error: 'Only blog posts can be deleted here.' }, { status: 403 });
   } catch (error) { return unavailable(error); }
 }

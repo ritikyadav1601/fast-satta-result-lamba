@@ -1,54 +1,49 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const indiaDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
-const sections = {
-  results: { label: 'Game Results', fields: ['gameId', 'date', 'result'] },
-  khaiwalCharts: { label: 'Khaiwal Chart', fields: [] },
-};
+const sections = { results: 'Game Results', khaiwalCharts: 'Khaiwal Chart', blogs: 'Blog Posts' };
 
 export default function AdminApp({ initialSection = 'results' }) {
   const router = useRouter();
-  const [data, setData] = useState(null);
-  const [section, setSection] = useState(sections[initialSection] ? initialSection : 'results');
-  const [date, setDate] = useState(indiaDate);
-  const [editing, setEditing] = useState(null);
-  const [message, setMessage] = useState('');
-  async function load(selectedDate = date) {
-    setData(null);
-    const response = await fetch(`/api/admin/data?date=${selectedDate}`);
-    const body = await response.json();
-    if (!response.ok) throw new Error(body.error || 'Could not load the primary database.');
-    setData(body);
-  }
+  const [data, setData] = useState(null), [section, setSection] = useState(sections[initialSection] ? initialSection : 'results');
+  const [date, setDate] = useState(indiaDate), [editing, setEditing] = useState(null), [message, setMessage] = useState(''), [busy, setBusy] = useState(false);
+  async function load(selectedDate = date) { setData(null); const response = await fetch(`/api/admin/data?date=${selectedDate}`), body = await response.json(); if (!response.ok) throw new Error(body.error || 'Could not load the primary database.'); setData(body); }
   useEffect(() => { load().catch(error => setMessage(error.message)); }, []);
-  const definition = sections[section];
-  const rows = useMemo(() => data?.[section] || [], [data, section]);
-
+  const results = useMemo(() => data?.results || [], [data]), blogs = useMemo(() => data?.blogs || [], [data]);
+  async function request(method, body) { setBusy(true); try { const response = await fetch('/api/admin/data', { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }), result = await response.json(); if (!response.ok) throw new Error(result.error || 'The request could not be completed.'); return result; } finally { setBusy(false); } }
   async function changeDate(event) { const value = event.target.value; setDate(value); setEditing(null); try { await load(value); } catch (error) { setMessage(error.message); } }
-  async function save(event) {
-    event.preventDefault();
-    const item = { ...(editing || {}), ...Object.fromEntries(new FormData(event.currentTarget)) };
-    const response = await fetch('/api/admin/data', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ collection: section, item }) });
-    const saved = await response.json();
-    if (!response.ok) { setMessage(saved.error || 'Could not save.'); return; }
-    if (section === 'results' && saved.date !== date) { await load(date); } else setData(current => ({ ...current, [section]: current[section].some(row => String(row.id) === String(saved.id)) ? current[section].map(row => String(row.id) === String(saved.id) ? saved : row) : [saved, ...current[section]] }));
-    setEditing(null); event.currentTarget.reset(); setMessage('Saved to MONGO_URI.');
-  }
-  async function saveKhaiwal(event) {
-    event.preventDefault();
-    const form=event.currentTarget;
-    const item=Object.fromEntries(new FormData(form));
-    const response=await fetch('/api/admin/data',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collection:'khaiwal1',item})});
-    const saved=await response.json();
-    if(!response.ok){setMessage(saved.error||'Could not save.');return;}
-    setData(current=>({...current,settings:{...current.settings,...saved}}));
-    setMessage('Khaiwal chart saved.');
-  }
+  async function saveResult(event) { event.preventDefault(); try { const item = { ...(editing || {}), ...Object.fromEntries(new FormData(event.currentTarget)) }, saved = await request('POST', { collection: 'results', item }); if (saved.date !== date) await load(date); else setData(current => ({ ...current, results: current.results.some(row => String(row.id) === String(saved.id)) ? current.results.map(row => String(row.id) === String(saved.id) ? saved : row) : [saved, ...current.results] })); setEditing(null); event.currentTarget.reset(); setMessage('Result saved to MONGO_URI.'); } catch (error) { setMessage(error.message); } }
+  async function saveKhaiwal(event) { event.preventDefault(); try { const saved = await request('POST', { collection: 'khaiwal1', item: Object.fromEntries(new FormData(event.currentTarget)) }); setData(current => ({ ...current, settings: { ...current.settings, ...saved } })); setMessage('Khaiwal chart saved.'); } catch (error) { setMessage(error.message); } }
+  async function saveBlog(event) { event.preventDefault(); const form = event.currentTarget, formData = new FormData(form); try { const item = { ...(editing || {}), ...Object.fromEntries(formData), published: formData.has('published') }, saved = await request('POST', { collection: 'blogs', item }); setData(current => ({ ...current, blogs: current.blogs.some(row => String(row.id) === String(saved.id)) ? current.blogs.map(row => String(row.id) === String(saved.id) ? saved : row) : [saved, ...current.blogs] })); setEditing(null); form.reset(); setMessage('Blog post saved to MONGO_URI.'); } catch (error) { setMessage(error.message); } }
+  async function deleteBlog(blog) { if (!window.confirm(`Delete “${blog.title}”? This cannot be undone.`)) return; try { await request('DELETE', { collection: 'blogs', id: blog.id }); setData(current => ({ ...current, blogs: current.blogs.filter(row => String(row.id) !== String(blog.id)) })); if (String(editing?.id) === String(blog.id)) setEditing(null); setMessage('Blog post deleted.'); } catch (error) { setMessage(error.message); } }
   async function logout() { await fetch('/api/admin/login', { method: 'DELETE' }); router.push('/admin/login'); }
   if (!data) return <div className="admin-main">{message || 'Loading selected date…'}</div>;
-  if(section==='khaiwalCharts')return <div className="admin-shell"><header className="admin-top"><strong>Fast Satta Result Admin — MONGO_URI only</strong><button className="primary-button" onClick={logout}>Logout</button></header><div className="admin-grid"><aside className="admin-nav">{Object.entries(sections).map(([key,item])=><button key={key} className={section===key?'active':''} onClick={()=>{setSection(key);setEditing(null);setMessage('')}}>{item.label}</button>)}</aside><main className="admin-main"><h1>Khaiwal Chart</h1><p>Change the homepage Khaiwal name and WhatsApp number.</p><div className="khaiwal-admin-grid"><div className="admin-card"><h2>Khaiwal Chart</h2><form className="admin-form" onSubmit={saveKhaiwal}><input name="khaiwalName" placeholder="Khaiwal name" defaultValue={data.settings?.khaiwal_name||''} required/><input name="whatsappNumbers" type="tel" placeholder="WhatsApp number with country code" defaultValue={data.settings?.whatsapp_number||''} required/><button type="submit">Save Khaiwal Chart</button></form></div></div>{message&&<div className="admin-card"><strong>{message}</strong></div>}</main></div></div>;
-  return <div className="admin-shell"><header className="admin-top"><strong>Fast Satta Result Admin — MONGO_URI only</strong><button className="primary-button" onClick={logout}>Logout</button></header><div className="admin-grid"><aside className="admin-nav">{Object.entries(sections).map(([key, item]) => <button key={key} className={section === key ? 'active' : ''} onClick={() => { setSection(key); setEditing(key === 'otherCharts' ? data.otherCharts?.[0] || null : null); }}>{item.label}</button>)}</aside><main className="admin-main">{section === 'results' && <div className="admin-card"><label className="admin-date-filter">Show results for <input type="date" value={date} onChange={changeDate} /></label><p>Only games updated on this date are listed below. Select another date to view or update that date’s results.</p></div>}<div className="admin-card"><h1>{definition.label}</h1>{section === 'results' && <p>Only Jaipur Matka, Sadar Bazar, Gwalior, Surat Bazar, Faridkot, Prem Nagar, and Jammu City can be updated here.</p>}{section === 'otherCharts'&&<p>Change the name and WhatsApp number shown in the second Khaiwal chart on the homepage.</p>}<form className="admin-form" onSubmit={save} key={editing?.id || `${section}-${date}`}>{definition.fields.map(field => field === 'gameId' ? <select key={field} name={field} defaultValue={editing?.[field] || ''} required><option value="" disabled>Select game</option>{data.games.map(game => <option key={game.id} value={game.id}>{game.name}</option>)}</select> : <input key={field} name={field} placeholder={field === 'khaiwalName' ? 'Khaiwal name' : field === 'whatsappNumbers' ? 'WhatsApp number with country code' : field} type={field === 'date' ? 'date' : field === 'whatsappNumbers' ? 'tel' : 'text'} defaultValue={editing?.[field] || (field === 'date' ? date : '')} required />)}<button type="submit">{section==='otherCharts'?'Save Changes':editing?'Update':'Save'} {definition.label}</button></form>{message && <small>{message}</small>}</div><div className="admin-card"><table className="data-table"><thead><tr>{definition.fields.map(field => <th key={field}>{field === 'khaiwalName'?'Khaiwal name':field === 'whatsappNumbers' ? 'WhatsApp number' : field}</th>)}<th>Action</th></tr></thead><tbody>{rows.map(row => <tr key={row.id}>{definition.fields.map(field => <td key={field}>{field === 'gameId' ? data.games.find(game => Number(game.id) === Number(row[field]))?.name || row[field] : String(row[field] ?? '')}</td>)}<td><button onClick={() => setEditing(row)}>Edit</button></td></tr>)}</tbody></table>{!rows.length && <p>{section === 'results' ? 'No game results have been updated for this date.' : 'Enter the second Khaiwal name and WhatsApp number above.'}</p>}</div></main></div></div>;
+  return <div className="admin-shell"><header className="admin-top"><strong>Fast Satta Result Admin — MONGO_URI only</strong><button className="primary-button" onClick={logout}>Logout</button></header><div className="admin-grid"><aside className="admin-nav" aria-label="Admin sections">{Object.entries(sections).map(([key, label]) => <button key={key} className={section === key ? 'active' : ''} onClick={() => { setSection(key); setEditing(null); setMessage(''); }}>{label}</button>)}</aside><main className="admin-main">{message && <div className="admin-message" role="status">{message}</div>}{section === 'results' && <ResultsAdmin data={data} rows={results} date={date} editing={editing} busy={busy} onDate={changeDate} onEdit={setEditing} onSave={saveResult} />}{section === 'khaiwalCharts' && <KhaiwalAdmin settings={data.settings} busy={busy} onSave={saveKhaiwal} />}{section === 'blogs' && <BlogsAdmin blogs={blogs} editing={editing} busy={busy} onEdit={setEditing} onDelete={deleteBlog} onSave={saveBlog} />}</main></div></div>;
+}
+
+function ResultsAdmin({ data, rows, date, editing, busy, onDate, onEdit, onSave }) { return <><div className="admin-card"><label className="admin-date-filter">Show results for <input type="date" value={date} onChange={onDate} /></label><p>Only games updated on this date are listed below.</p></div><div className="admin-card"><h1>Game Results</h1><p>Only approved primary games can be updated here.</p><form className="admin-form" onSubmit={onSave} key={editing?.id || date}><select name="gameId" defaultValue={editing?.gameId || ''} required><option value="" disabled>Select game</option>{data.games.map(game => <option key={game.id} value={game.id}>{game.name}</option>)}</select><input name="date" type="date" defaultValue={editing?.date || date} required /><input name="result" placeholder="Result" defaultValue={editing?.result || ''} required /><button disabled={busy} type="submit">{busy ? 'Saving…' : editing ? 'Update Result' : 'Save Result'}</button></form></div><div className="admin-card admin-table-wrap"><table className="data-table"><thead><tr><th>Game</th><th>Date</th><th>Result</th><th>Action</th></tr></thead><tbody>{rows.map(row => <tr key={row.id}><td>{data.games.find(game => Number(game.id) === Number(row.gameId))?.name || row.gameId}</td><td>{row.date}</td><td>{row.result}</td><td><button onClick={() => onEdit(row)}>Edit</button></td></tr>)}</tbody></table>{!rows.length && <p>No game results have been updated for this date.</p>}</div></>; }
+
+function KhaiwalAdmin({ settings, busy, onSave }) { return <div className="khaiwal-admin-grid"><div className="admin-card"><h1>Khaiwal Chart</h1><p>Change the homepage Khaiwal name and WhatsApp number.</p><form className="admin-form" onSubmit={onSave}><label>Khaiwal name<input name="khaiwalName" defaultValue={settings?.khaiwal_name || ''} required /></label><label>WhatsApp number<input name="whatsappNumbers" type="tel" defaultValue={settings?.whatsapp_number || ''} required /></label><button disabled={busy} type="submit">{busy ? 'Saving…' : 'Save Khaiwal Chart'}</button></form></div></div>; }
+
+function BlogImageField({ initialImage }) {
+  const [image, setImage] = useState(initialImage || ''), [error, setError] = useState('');
+  function selectImage(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { setError('Please select an image file.'); return; }
+    if (file.size > 4 * 1024 * 1024) { setError('Image must be 4 MB or smaller.'); event.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = () => { setImage(String(reader.result)); setError(''); };
+    reader.onerror = () => setError('The image could not be read.');
+    reader.readAsDataURL(file);
+  }
+  return <fieldset className="admin-field-wide image-upload-field"><legend>Featured image</legend><input name="featuredImage" type="hidden" value={image} />{image ? <div className="image-preview"><img src={image.startsWith('data:') || image.startsWith('/') || /^https?:\/\//i.test(image) ? image : `/${image}`} alt="Featured image preview" /><button className="danger-button" type="button" onClick={() => setImage('')}>Remove image</button></div> : <p>No image selected.</p>}<label className="image-picker">Choose image<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={selectImage} /></label><small>PNG, JPG, WebP, or GIF. Maximum 4 MB.</small>{error && <small className="field-error" role="alert">{error}</small>}</fieldset>;
+}
+
+function BlogsAdmin({ blogs, editing, busy, onEdit, onDelete, onSave }) {
+  return <><div className="admin-card"><div className="admin-heading-row"><div><h1>{editing ? 'Edit Blog Post' : 'Add Blog Post'}</h1><p>Write and publish content stored in the primary MongoDB blogs collection.</p></div>{editing && <button className="secondary-button" type="button" onClick={() => onEdit(null)}>Cancel editing</button>}</div><form className="admin-form blog-admin-form" onSubmit={onSave} key={editing?.id || 'new-blog'}><label>Title<input name="title" defaultValue={editing?.title || ''} required /></label><label>Slug<input name="slug" defaultValue={editing?.slug || ''} placeholder="Generated from title if blank" /></label><label className="admin-field-wide">Short description<textarea name="shortDescription" rows="3" defaultValue={editing?.shortDescription || ''} /></label><label className="admin-field-wide">Blog content (HTML supported)<textarea name="description" rows="14" defaultValue={editing?.description || ''} required /></label><BlogImageField initialImage={editing?.featuredImage} /><details className="admin-field-wide seo-fields"><summary>SEO settings</summary><div className="admin-form"><label className="admin-field-wide">Meta title<input name="metaTitle" defaultValue={editing?.metaTitle || ''} /></label><label className="admin-field-wide">Meta description<textarea name="metaDescription" rows="3" defaultValue={editing?.metaDescription || ''} /></label><label className="admin-field-wide">Meta keywords<input name="metaKeywords" defaultValue={editing?.metaKeywords || ''} /></label></div></details><label className="publish-toggle"><input name="published" type="checkbox" defaultChecked={editing ? editing.published !== false && editing.isPublished !== 0 : true} /> Publish this post</label><button disabled={busy} type="submit">{busy ? 'Saving…' : editing ? 'Update Blog Post' : 'Publish Blog Post'}</button></form></div><div className="admin-card"><div className="admin-heading-row"><div><h2>All Blog Posts</h2><p>{blogs.length} posts in MONGO_URI</p></div></div><div className="blog-admin-list">{blogs.map(blog => <article className="blog-admin-row" key={blog.id}><div><span className={`status-pill ${blog.published !== false && blog.isPublished !== 0 ? 'published' : 'draft'}`}>{blog.published !== false && blog.isPublished !== 0 ? 'Published' : 'Draft'}</span><h3>{blog.title}</h3><p>/{blog.slug}</p></div><div className="admin-row-actions">{blog.slug && <Link className="secondary-button" href={`/blog/${blog.slug}`} target="_blank">View</Link>}<button className="secondary-button" onClick={() => { onEdit(blog); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Edit</button><button className="danger-button" disabled={busy} onClick={() => onDelete(blog)}>Delete</button></div></article>)}</div>{!blogs.length && <p>No blog posts yet.</p>}</div></>;
 }
