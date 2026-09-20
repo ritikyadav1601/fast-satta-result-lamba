@@ -6,7 +6,8 @@
         "build": "next build",
         "start": "next start",
         "import:sql": "node scripts/import-sql-dump.mjs",
-        "upload:mongodb": "node scripts/upload-mongodb.mjs"
+        "upload:mongodb": "node scripts/upload-mongodb.mjs",
+        "check:mongo": "node scripts/check-mongo.mjs"
     },
     "dependencies": {
         "mongodb": "^7.5.0",
