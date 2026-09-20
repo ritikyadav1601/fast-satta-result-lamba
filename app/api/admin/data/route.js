@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { adminPrimaryData, deleteAdminBlog, saveAdminBlog, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
+import { adminBlog, adminPrimaryData, deleteAdminBlog, saveAdminBlog, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
 import {isAdminSession} from '@/lib/admin-auth';
 
 async function allowed() { return isAdminSession((await cookies()).get('fsk_admin')?.value); }
@@ -8,7 +8,8 @@ const unavailable = error => NextResponse.json({ error: error.message || 'Primar
 
 export async function GET(request) {
   if (!await allowed()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  try { return NextResponse.json(await adminPrimaryData(new URL(request.url).searchParams.get('date'))); } catch (error) { return unavailable(error); }
+  const params = new URL(request.url).searchParams;
+  try { if (params.get('blog')) return NextResponse.json(await adminBlog(params.get('blog'))); return NextResponse.json(await adminPrimaryData(params.get('date'))); } catch (error) { return unavailable(error); }
 }
 
 export async function POST(request) {
