@@ -1,4 +1,5 @@
 import {NextResponse} from 'next/server';
+import {revalidatePath} from 'next/cache';
 import {cookies} from 'next/headers';
 import {isRestrictedAdminSession} from '@/lib/admin-auth';
 import {RESTRICTED_ADMIN_GAME_IDS,restrictedAdminData,saveRestrictedAdminResult} from '@/lib/admin-primary';
@@ -15,5 +16,5 @@ export async function POST(request){
   if(!await allowed())return NextResponse.json({error:'Unauthorized'},{status:401});
   const {item}=await request.json();
   if(!RESTRICTED_ADMIN_GAME_IDS.includes(Number(item?.gameId)))return NextResponse.json({error:'Only Prem Nagar and Jammu City results can be updated.'},{status:403});
-  try{return NextResponse.json(await saveRestrictedAdminResult(item))}catch(error){return unavailable(error)}
+  try{const saved=await saveRestrictedAdminResult(item);try{revalidatePath('/')}catch{}return NextResponse.json(saved)}catch(error){return unavailable(error)}
 }
