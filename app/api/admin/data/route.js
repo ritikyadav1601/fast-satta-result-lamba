@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { adminBlog, adminPrimaryData, deleteAdminBlog, saveAdminBlog, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
+import { adminBlog, adminPrimaryData, deleteAdminBlog, deleteAdminResult, saveAdminBlog, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
 import {isAdminSession} from '@/lib/admin-auth';
 
 // Publish saved changes immediately instead of waiting for the homepage cache to expire.
@@ -29,9 +29,10 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   if (!await allowed()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const { collection, id } = await request.json();
+  const { collection, id, item } = await request.json();
   try {
+    if (collection === 'results') return done(deleteAdminResult(item));
     if (collection === 'blogs' && id != null) return done(deleteAdminBlog(id));
-    return NextResponse.json({ error: 'Only blog posts can be deleted here.' }, { status: 403 });
+    return NextResponse.json({ error: 'Only game results and blog posts can be deleted here.' }, { status: 403 });
   } catch (error) { return unavailable(error); }
 }
