@@ -12,6 +12,8 @@ const dateTitle = () => {
   return `Satta King Fast Result – ${format(now)} & ${format(yesterday)}`;
 };
 
+export const metadata = { title: 'Satta King Chart 2026 – All Game Result Charts | Fast Satta Result', description: 'Satta King chart for every game: Gali, Desawar, Faridabad, Ghaziabad, Delhi Bazar, Shri Ganesh and more. Open a game to see its full yearly result record.', alternates: { canonical: '/chart' } };
+
 export default async function Chart() {
   const index = await getChartIndex();
   const games = index.games.filter(game => game.status !== false);

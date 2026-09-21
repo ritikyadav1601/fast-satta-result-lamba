@@ -22,6 +22,17 @@ const dateTitle = () => {
   return `Satta King Fast Result – ${format(now)} & ${format(yesterday)}`;
 };
 
+export async function generateMetadata({params}){
+  const slug=decodeURIComponent((await params).game_name);
+  const game=(await getGames().catch(()=>[])).find(item=>item.status!==false&&(item.slug===slug||gameSlug(item.englishName||item.english_name||item.name)===slug));
+  const ascii=v=>/^[\x00-\x7F]*$/.test(String(v||''))&&String(v||'').trim();
+  const name=((game&&(ascii(game.englishName||game.english_name)||game.name))||slug.replace(/-/g,' ')).replace(/\b[a-z]/g,c=>c.toUpperCase());
+  const year=new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Kolkata'}).format(new Date());
+  const title=`${name} Satta Chart ${year} – Daily Result Record | Fast Satta Result`;
+  const description=`${name} satta result chart ${year}: full day-by-day record of ${name} results by month, with previous years and today's latest update.`;
+  return {title,description,alternates:{canonical:`/chart/${encodeURIComponent(slug)}`},openGraph:{title,description,type:'website'}};
+}
+
 export default async function NamedGameChart({params,searchParams}) {
   const {game_name:rawSlug}=await params,query=await searchParams;
   const slug=decodeURIComponent(rawSlug);
