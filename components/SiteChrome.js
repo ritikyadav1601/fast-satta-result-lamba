@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getData } from "@/lib/store";
+import { getSettings } from "@/lib/store";
 
 export function Header({ active = "home", settings }) {
   return (
@@ -85,7 +85,7 @@ export default async function SiteChrome({
   active,
   settings: providedSettings,
 }) {
-  const settings = providedSettings || (await getData()).settings;
+  const settings = providedSettings || (await getSettings());
   return (
     <>
       <Header active={active} settings={settings} />

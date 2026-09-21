@@ -4,7 +4,7 @@ import { gameSlug } from '@/lib/game-slug';
 
 const dateKey=value=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata'}).format(value);
 const showResult=value=>value==null||value===''?'--':String(value).padStart(2,'0');
-const pendingResult=value=>value==null||value===''?<img className="pending-result-gif" src="/assets/img/wait.gif" alt="Result awaiting update" width="40" height="40"/>:showResult(value);
+const pendingResult=value=>value==null||value===''?<img className="pending-result-gif" src="/assets/img/wait.gif" alt="Result awaiting update" width="40" height="40" loading="lazy" decoding="async"/>:showResult(value);
 const showTime=value=>{if(!value)return '--';const [hour,minute]=value.split(':').map(Number);return new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'UTC'}).format(new Date(Date.UTC(2000,0,1,hour,minute)))};
 
 export default function ExtraGamesResults({games,results}) {

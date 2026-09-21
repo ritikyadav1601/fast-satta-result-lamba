@@ -78,6 +78,8 @@ const WaitResult = () => (
     alt="Result awaiting update"
     width="40"
     height="40"
+    loading="lazy"
+    decoding="async"
   />
 );
 const todayResultDisplay = (results, game) =>

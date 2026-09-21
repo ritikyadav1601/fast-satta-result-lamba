@@ -3,7 +3,7 @@ import SiteChrome from '@/components/SiteChrome';
 import ChartYearSelect from '@/components/ChartYearSelect';
 import { getMainGameBySlug } from '@/lib/main-games';
 import { getExtraGameBySlug } from '@/lib/extra-games';
-import {getData} from '@/lib/store';
+import {getGames,getGameResults} from '@/lib/store';
 import {gameSlug} from '@/lib/game-slug';
 import {ADMIN_GAME_IDS} from '@/lib/admin-primary';
 
@@ -22,12 +22,23 @@ const dateTitle = () => {
   return `Satta King Fast Result – ${format(now)} & ${format(yesterday)}`;
 };
 
+export async function generateMetadata({params}){
+  const slug=decodeURIComponent((await params).game_name);
+  const game=(await getGames().catch(()=>[])).find(item=>item.status!==false&&(item.slug===slug||gameSlug(item.englishName||item.english_name||item.name)===slug));
+  const ascii=v=>/^[\x00-\x7F]*$/.test(String(v||''))&&String(v||'').trim();
+  const name=((game&&(ascii(game.englishName||game.english_name)||game.name))||slug.replace(/-/g,' ')).replace(/\b[a-z]/g,c=>c.toUpperCase());
+  const year=new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Kolkata'}).format(new Date());
+  const title=`${name} Satta Chart ${year} – Daily Result Record | Fast Satta Result`;
+  const description=`${name} satta result chart ${year}: full day-by-day record of ${name} results by month, with previous years and today's latest update.`;
+  return {title,description,alternates:{canonical:`/chart/${encodeURIComponent(slug)}`},openGraph:{title,description,type:'website'}};
+}
+
 export default async function NamedGameChart({params,searchParams}) {
   const {game_name:rawSlug}=await params,query=await searchParams;
   const slug=decodeURIComponent(rawSlug);
-  const legacy=await getData();
-  const legacyGame=legacy.games.find(item=>item.status!==false&&(item.slug===slug||gameSlug(item.englishName||item.english_name||item.name)===slug));
-  const legacyRows=legacyGame?legacy.results.filter(row=>String(row.gameId)===String(legacyGame.id)):[];
+  const legacyGames=await getGames();
+  const legacyGame=legacyGames.find(item=>item.status!==false&&(item.slug===slug||gameSlug(item.englishName||item.english_name||item.name)===slug));
+  const legacyRows=legacyGame?await getGameResults(legacyGame.id):[];
   let external=null;
   for(const candidate of [slug,slugAlias[slug]].filter(Boolean)){
     external=await getMainGameBySlug(candidate).catch(()=>null)||await getExtraGameBySlug(candidate).catch(()=>null);
