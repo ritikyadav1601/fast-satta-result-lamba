@@ -1,6 +1,6 @@
 import {notFound,redirect} from 'next/navigation';
 import {getMainGame} from '@/lib/main-games';
-import {getData} from '@/lib/store';
+import {getGames} from '@/lib/store';
 import {gameSlug} from '@/lib/game-slug';
 
 export const dynamic='force-dynamic';
@@ -8,7 +8,7 @@ export const dynamic='force-dynamic';
 export default async function LegacyGameChart({params,searchParams}){
   const {id}=await params,query=await searchParams;
   const data=query?.source==='legacy'
-    ? await (async()=>{const legacy=await getData(),game=legacy.games.find(item=>String(item.id)===String(id));return game?{game}:null})()
+    ? await (async()=>{const game=(await getGames()).find(item=>String(item.id)===String(id));return game?{game}:null})()
     : await getMainGame(id);
   if(!data)notFound();
   const year=query?.year?`?year=${query.year}`:'';

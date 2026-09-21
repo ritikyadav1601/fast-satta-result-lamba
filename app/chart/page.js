@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import SiteChrome from '@/components/SiteChrome';
-import {getData} from '@/lib/store';
+import {getChartIndex} from '@/lib/store';
 import {gameSlug} from '@/lib/game-slug';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 const dateTitle = () => {
   const now = new Date();
@@ -13,10 +13,10 @@ const dateTitle = () => {
 };
 
 export default async function Chart() {
-  const data = await getData();
-  const games = data.games.filter(game => game.status !== false);
-  const years = [...new Set(data.results.map(row => Number(String(row.date).slice(0, 4))).filter(Boolean))].sort((a, b) => b - a);
-  const resultKeys = new Set(data.results.map(row => `${row.gameId}:${String(row.date).slice(0, 4)}`));
+  const index = await getChartIndex();
+  const games = index.games.filter(game => game.status !== false);
+  const resultKeys = new Set(index.keys);
+  const years = [...new Set(index.keys.map(key => Number(key.split(':')[1])).filter(Boolean))].sort((a, b) => b - a);
 
   return <SiteChrome active="chart">
     <div className="chart-date-band"><h1>{dateTitle()}</h1></div>
