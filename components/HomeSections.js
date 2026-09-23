@@ -210,7 +210,7 @@ export function Hero({ settings, games, results }) {
               className="col-md-12 text-center"
               style={{ paddingBottom: 15 }}
             >
-              <h4
+              <p
                 style={{
                   fontSize: 24,
                   fontWeight: "normal",
@@ -220,7 +220,7 @@ export function Hero({ settings, games, results }) {
                 }}
               >
                 Disawar
-              </h4>
+              </p>
               <p style={{ fontSize: 18, fontWeight: 400 }}>
                 {timeLabel(disawar?.resultTime || disawar?.result_time)}
               </p>
@@ -382,7 +382,7 @@ export function ResultsAndCharts({ settings, games, results }) {
         <div className="container">
           <div className="row">
             <div className="col-md-12 text-center">
-              <h3>Satta Chart, Faridabad Satta, Ghaziabad Result</h3>
+              <p style={{ fontSize: "1.17em", fontWeight: "bold", margin: "1em 0" }}>Satta Chart, Faridabad Satta, Ghaziabad Result</p>
             </div>
           </div>
         </div>
@@ -476,17 +476,17 @@ export function ResultsAndCharts({ settings, games, results }) {
         </div>
       </section>
       <section className="octoberresultchart">
-        <h2>
+        <p style={{ fontSize: "1.5em", fontWeight: "bold", margin: "0.83em 0" }}>
           Today Satta Result, Gali Satta King, Desawar Satta King, Fast Satta
           King
-        </h2>
+        </p>
       </section>
       <section className="octoberresultchart">
-        <h3>
+        <p style={{ fontSize: "1.17em", fontWeight: "bold", margin: "1em 0" }}>
           {now.getFullYear()}{" "}
           {now.toLocaleString("en-US", { month: "long" }).toUpperCase()} RESULT
           CHART
-        </h3>
+        </p>
       </section>
       <section className="newtable">
         <div className="table-responsive marginBottom">
