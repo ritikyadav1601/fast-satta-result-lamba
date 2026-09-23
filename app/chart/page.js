@@ -21,7 +21,7 @@ export default async function Chart() {
   const years = [...new Set(index.keys.map(key => Number(key.split(':')[1])).filter(Boolean))].sort((a, b) => b - a);
 
   return <SiteChrome active="chart">
-    <div className="chart-date-band"><h1>{dateTitle()}</h1></div>
+    <div className="chart-date-band"><p>{dateTitle()}</p></div>
     <main className="chart-page">
       <section className="chart-intro">
         <h1>Satta King Chart {years[0]} – Satta Result Chart &amp; Old Charts</h1>
