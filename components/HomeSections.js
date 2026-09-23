@@ -263,6 +263,9 @@ function ChannelCards() {
             <img
               src="/assets/img/whatsapp.png"
               alt="Whatsapp to show game on this website"
+              width="200"
+              height="69"
+              loading="lazy"
             />
           </a>
         </p>
@@ -450,7 +453,7 @@ export function ResultsAndCharts({ settings, games, results }) {
         <p>----{(settings.owner_name || "").toUpperCase()} ----</p>
         <p>
           <a href={`https://wa.me/${settings.owner_number || ""}`}>
-            <img src="/assets/img/whatsapp.png" alt="WhatsApp" />
+            <img src="/assets/img/whatsapp.png" alt="WhatsApp" width="200" height="69" loading="lazy" />
           </a>
         </p>
         <p>
@@ -463,7 +466,7 @@ export function ResultsAndCharts({ settings, games, results }) {
         </p>
         <p>
           <a href={`https://t.me/${settings.owner_number || ""}`}>
-            <img src="/assets/img/tel.webp" alt="Telegram link" />
+            <img src="/assets/img/tel.webp" alt="Telegram link" width="200" height="60" loading="lazy" />
           </a>
         </p>
       </div>

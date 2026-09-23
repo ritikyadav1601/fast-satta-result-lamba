@@ -7,7 +7,7 @@ export default function BlogCards({ blogs = [], homepage = false }) {
   return <div className="blog-grid">{posts.map(blog => {
     const image = blogImage(blog.featuredImage, blog.id);
     return <article className="blog-card" key={blog.id || blog.slug}>
-      {image && <Link className="blog-card-image" href={`/blog/${blog.slug}`} aria-label={`Read ${blog.title}`}><img src={image} alt="" loading="lazy" /></Link>}
+      {image && <Link className="blog-card-image" href={`/blog/${blog.slug}`} aria-label={`Read ${blog.title}`}><img src={image} alt={blog.title} loading="lazy" /></Link>}
       <div className="blog-card-body"><h2><Link href={`/blog/${blog.slug}`}>{blog.title}</Link></h2>{blog.shortDescription && <p>{blog.shortDescription}</p>}<Link className="blog-read-more" href={`/blog/${blog.slug}`}>Read article <span aria-hidden="true">→</span></Link></div>
     </article>;
   })}</div>;
