@@ -11,8 +11,8 @@ export function Header({ active = "home", settings }) {
               {[
                 ["home", "/", "Home"],
                 ["chart", "/chart", "Chart"],
-                ["blogs", "/blogs", "Blogs"],
                 ["contact", "/contact", "Contact"],
+                ["login", "/admin/login", "Login"],
               ].map(([key, href, label]) => (
                 <li key={key}>
                   <Link className={active === key ? "active" : ""} href={href}>
