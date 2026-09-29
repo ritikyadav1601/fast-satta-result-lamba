@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { adminBlog, adminPrimaryData, deleteAdminBlog, deleteAdminResult, saveAdminBlog, saveAdminResult, saveFirstKhaiwal } from '@/lib/admin-primary';
+import { adminBlog, adminPrimaryData, deleteAdminBlog, deleteAdminResult, saveAdminBlog, saveAdminResult, saveFirstKhaiwal, saveHomepageSeo } from '@/lib/admin-primary';
 import {isAdminSession} from '@/lib/admin-auth';
 
 // Publish saved changes immediately instead of waiting for the homepage cache to expire.
@@ -23,6 +23,7 @@ export async function POST(request) {
     if (collection === 'results') return done(saveAdminResult(item));
     if (collection === 'khaiwal1') return done(saveFirstKhaiwal(item));
     if (collection === 'blogs') return done(saveAdminBlog(item));
+    if (collection === 'homepageSeo') return done(saveHomepageSeo(item));
     return NextResponse.json({ error: 'This admin panel only manages approved results and Khaiwal settings.' }, { status: 403 });
   } catch (error) { return unavailable(error); }
 }
