@@ -456,13 +456,21 @@ function HomepageSeoAdmin({ settings, busy, onSave }) {
         <div>
           <h1>Homepage SEO</h1>
           <p>
-            Override the homepage&apos;s meta title, meta description, and
-            the long-form SEO content block below. Leave a field blank to
-            keep using the site&apos;s default.
+            Override the homepage headline, meta title, meta description,
+            and the long-form SEO content block below. Leave a field
+            blank to keep using the site&apos;s default.
           </p>
         </div>
       </div>
       <form className="admin-form homepage-seo-form" onSubmit={onSave}>
+        <label className="admin-field-wide">
+          Homepage headline (shown above the live date)
+          <input
+            name="heroTitle"
+            placeholder='Defaults to "Satta King Fast Result" if left blank'
+            defaultValue={seo.heroTitle || ""}
+          />
+        </label>
         <label className="admin-field-wide">
           Meta title
           <input

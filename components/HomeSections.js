@@ -154,7 +154,8 @@ export function Hero({ settings, games, results }) {
           <div className="row">
             <div className="col-md-12 text-center">
               <div className="homepage-date-title">
-                Satta King Fast Result – {displayDate(now)} &amp;{" "}
+                {settings?.homepageSeo?.heroTitle || "Satta King Fast Result"} –{" "}
+                {displayDate(now)} &amp;{" "}
                 {displayDate(yesterday)}
               </div>
             </div>
@@ -269,24 +270,6 @@ function ChannelCards() {
             />
           </a>
         </p>
-      </div>
-      <div className="channel-panel">
-        <div className="row">
-          <div className="card-body channel-yellow">
-            <p>
-              अब टेलीग्राम के PLAYERS भी जल्दी रेिजल्ट पाने के लिए हमारे
-              टेलीग्राम के चैनल को JOIN करे और SUPERFAST रेिजल्ट पाए
-            </p>
-            <p>
-              <img
-                src="/assets/img/tely.png"
-                alt="Telegram"
-                height="60"
-                width="60"
-              />
-            </p>
-          </div>
-        </div>
       </div>
       <div className="channel-panel">
         <div className="row">
