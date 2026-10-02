@@ -250,38 +250,30 @@ export function Hero({ settings, games, results }) {
   );
 }
 
+// WhatsApp channel box is hidden for now. Set to true to show it again.
+const SHOW_CHANNEL_BOX = false;
+
 function ChannelCards() {
+  if (!SHOW_CHANNEL_BOX) return null;
   return (
-    <>
-      <div className="column-ad card-body promo-gradient">
-        <p>🙏🏿नमस्कार साथियो 🙏🏿</p>
-        <p>
-          सुपरफास्ट रिजल्ट के लिए हमारे व्हाट्सप्प चैनल से जुड़े चैनल को follow
-          करे&nbsp; &nbsp;
-        </p>
-        <p>
-          <a href="https://whatsapp.com/channel/0029Vb9zF4R7NoZycbDiKC25">
-            <img
-              src="/assets/img/whatsapp.png"
-              alt="Whatsapp to show game on this website"
-              width="200"
-              height="69"
-              loading="lazy"
-            />
-          </a>
-        </p>
-      </div>
-      <div className="channel-panel">
-        <div className="row">
-          <div className="card-body channel-yellow">
-            <p>
-              FAST-SATTA-RESULT ( FAST-SATTA-RESULT ) UPDATES ALL SATTA GAMES ON
-              REAL TIME EVERYDAY.
-            </p>
-          </div>
-        </div>
-      </div>
-    </>
+    <div className="column-ad card-body promo-gradient">
+      <p>🙏🏿नमस्कार साथियो 🙏🏿</p>
+      <p>
+        सुपरफास्ट रिजल्ट के लिए हमारे व्हाट्सप्प चैनल से जुड़े चैनल को follow
+        करे&nbsp; &nbsp;
+      </p>
+      <p>
+        <a href="https://whatsapp.com/channel/0029Vb9zF4R7NoZycbDiKC25">
+          <img
+            src="/assets/img/whatsapp.png"
+            alt="Whatsapp to show game on this website"
+            width="200"
+            height="69"
+            loading="lazy"
+          />
+        </a>
+      </p>
+    </div>
   );
 }
 
