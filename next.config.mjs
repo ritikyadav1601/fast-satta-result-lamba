@@ -10,5 +10,5 @@ const blogRedirects=[
   {source:'/blog/top-satta-result-sites-2025-gali-faridabad-desawar',destination:'/blog/latest-satta-result-2025-gali-faridabad-desawar',permanent:true},
   {source:'/blog/fast-satta-result-gali-disawar-today-2025-live-chart',destination:'/blog/fast-satta-result-today-gali-desawar-faridabad-live',permanent:true},
 ];
-const nextConfig = { output:'standalone',outputFileTracingRoot:process.cwd(),poweredByHeader:false,compress:true,async headers(){return [{source:'/:path*',headers:securityHeaders}]},async redirects(){return blogRedirects} };
+const nextConfig = { output:'standalone',outputFileTracingRoot:process.cwd(),poweredByHeader:false,compress:true,experimental:{inlineCss:true},async headers(){return [{source:'/:path*',headers:securityHeaders}]},async redirects(){return blogRedirects} };
 export default nextConfig;
