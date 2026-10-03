@@ -1,4 +1,5 @@
 import { safeBlogHtml } from "@/lib/blog-content";
+import { fillSeoDates } from "@/lib/seo-date";
 
 const faqs = [
   [
@@ -238,14 +239,13 @@ export function defaultHomepageSeoDescription(date) {
 export default function HomepageSeoContent({ date, settings }) {
   const seo = settings?.homepageSeo;
   const usingCustomContent = Boolean(seo?.contentHtml && seo.contentHtml.trim());
-  const rawHtml = (usingCustomContent ? seo.contentHtml : DEFAULT_HOMEPAGE_SEO_HTML).replace(
-    /\{date\}/g,
-    date
+  const rawHtml = fillSeoDates(
+    usingCustomContent ? seo.contentHtml : DEFAULT_HOMEPAGE_SEO_HTML
   );
   const html = safeBlogHtml(rawHtml);
-  const title = (seo?.metaTitle && seo.metaTitle.trim()) || defaultHomepageSeoTitle(date);
+  const title = (seo?.metaTitle && fillSeoDates(seo.metaTitle.trim())) || defaultHomepageSeoTitle(date);
   const description =
-    (seo?.metaDescription && seo.metaDescription.trim()) ||
+    (seo?.metaDescription && fillSeoDates(seo.metaDescription.trim())) ||
     defaultHomepageSeoDescription(date);
   const schema = {
     "@context": "https://schema.org",

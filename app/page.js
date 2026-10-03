@@ -6,6 +6,7 @@ import { getExtraGamesData } from '@/lib/extra-games';
 import ExtraGamesResults from '@/components/ExtraGamesResults';
 import {getSplitMainGames} from '@/lib/main-games';
 import { HomepageBlogs } from '@/components/BlogCards';
+import { fillSeoDates } from '@/lib/seo-date';
 
 // Results can change throughout the day, but rendering this page for every
 // visitor opens three separate MongoDB connections. ISR keeps updates prompt
@@ -18,7 +19,7 @@ const optionalData = (request, fallback, timeout = 20000) =>
     new Promise(resolve => setTimeout(() => resolve(fallback), timeout)),
   ]);
 const dynamicDate=()=>new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'long',year:'numeric',timeZone:'Asia/Kolkata'}).format(new Date());
-export async function generateMetadata(){const date=dynamicDate();const seo=(await getSettings())?.homepageSeo;const title=(seo?.metaTitle&&seo.metaTitle.trim())||`Satta Result Today ${date} | Fast Satta Result Live`;const description=(seo?.metaDescription&&seo.metaDescription.trim())||`Get the latest Fast Satta Result Today (${date}) live. Access real-time Satta Result Live records, and track historical Satta King Chart data instantly.`;return {title,description,keywords:['Satta Result Today','Fast Satta Result','Satta Result Live','Satta King Result','Satta King Chart','Gali Result','Desawar Result','Faridabad Result','Ghaziabad Result'],authors:[{name:'Fast Satta Result'}],creator:'Fast Satta Result',publisher:'Fast Satta Result',robots:{index:true,follow:true,googleBot:{index:true,follow:true}},alternates:{canonical:'https://www.fast-satta-result.com/'}}}
+export async function generateMetadata(){const date=dynamicDate();const seo=(await getSettings())?.homepageSeo;const title=(seo?.metaTitle&&fillSeoDates(seo.metaTitle.trim()))||`Satta Result Today ${date} | Fast Satta Result Live`;const description=(seo?.metaDescription&&fillSeoDates(seo.metaDescription.trim()))||`Get the latest Fast Satta Result Today (${date}) live. Access real-time Satta Result Live records, and track historical Satta King Chart data instantly.`;return {title,description,keywords:['Satta Result Today','Fast Satta Result','Satta Result Live','Satta King Result','Satta King Chart','Gali Result','Desawar Result','Faridabad Result','Ghaziabad Result'],authors:[{name:'Fast Satta Result'}],creator:'Fast Satta Result',publisher:'Fast Satta Result',robots:{index:true,follow:true,googleBot:{index:true,follow:true}},alternates:{canonical:'https://www.fast-satta-result.com/'}}}
 const normalize=value=>String(value||'').trim().toLowerCase().replace(/[^a-z]+/g,' ').trim().replace('desawer','desawar');
 // MONGO_URI results (saved from the admin panel) override MAIN_GAMES_MONGO_URI results for the same game and date.
 const mergeResults=(base,override)=>{const merged=new Map(base.map(row=>[row.date,row]));override.forEach(row=>{if(row.result!==undefined&&row.result!==null&&String(row.result).trim()!=='')merged.set(row.date,row)});return [...merged.values()]};
