@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DEFAULT_HOMEPAGE_SEO_HTML } from "./HomepageSeoContent";
+import { seoDateValues } from "@/lib/seo-date";
 
 const indiaDate = () =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(
@@ -450,6 +451,7 @@ function KhaiwalAdmin({ settings, busy, onSave }) {
 
 function HomepageSeoAdmin({ settings, busy, onSave }) {
   const seo = settings?.homepageSeo || {};
+  const dates = seoDateValues();
   return (
     <div className="admin-card homepage-seo-admin">
       <div className="admin-heading-row">
@@ -463,11 +465,24 @@ function HomepageSeoAdmin({ settings, busy, onSave }) {
         </div>
       </div>
       <form className="admin-form homepage-seo-form" onSubmit={onSave}>
+        <div className="admin-field-wide seo-content-hint">
+          <strong>Dynamic dates work in every field below.</strong> Type any
+          of these tags and the site replaces them with the current India
+          date automatically, every day:{" "}
+          <code>{"{date}"}</code> = {dates.date},{" "}
+          <code>{"{yesterday}"}</code> = {dates.yesterday},{" "}
+          <code>{"{day}"}</code> = {dates.day},{" "}
+          <code>{"{month}"}</code> = {dates.month},{" "}
+          <code>{"{year}"}</code> = {dates.year}.
+          <br />
+          Example meta title:{" "}
+          <code>{"Satta Result Today {date} | Fast Satta Result Live"}</code>
+        </div>
         <label className="admin-field-wide">
           Homepage headline (shown above the live date)
           <input
             name="heroTitle"
-            placeholder='Defaults to "Satta King Fast Result" if left blank'
+            placeholder='e.g. Satta King Fast Result – {date} & {yesterday} (without tags, today & yesterday dates are added automatically)'
             defaultValue={seo.heroTitle || ""}
           />
         </label>
@@ -475,7 +490,7 @@ function HomepageSeoAdmin({ settings, busy, onSave }) {
           Meta title
           <input
             name="metaTitle"
-            placeholder="Defaults to the built-in title if left blank"
+            placeholder="e.g. Satta Result Today {date} | Fast Satta Result Live"
             defaultValue={seo.metaTitle || ""}
           />
         </label>
@@ -484,15 +499,14 @@ function HomepageSeoAdmin({ settings, busy, onSave }) {
           <textarea
             name="metaDescription"
             rows="3"
-            placeholder="Defaults to the built-in description if left blank"
+            placeholder="e.g. Get the latest Fast Satta Result Today ({date}) live..."
             defaultValue={seo.metaDescription || ""}
           />
         </label>
         <div className="admin-field-wide seo-content-hint">
           <strong>Homepage content</strong> — basic HTML tags are supported
           (scripts and event handlers are stripped automatically for
-          safety). Use the literal text <code>{"{date}"}</code> anywhere and
-          it will be swapped for today&apos;s date automatically.
+          safety). All the date tags above work here too.
         </div>
         <label className="admin-field-wide">
           <span className="sr-only">Homepage content HTML</span>

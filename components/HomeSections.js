@@ -2,6 +2,7 @@ import Link from "next/link";
 import LiveClock from "./LiveClock";
 import { displayDate, today } from "@/lib/store";
 import { gameSlug } from "@/lib/game-slug";
+import { fillSeoDates, hasSeoDateTag } from "@/lib/seo-date";
 
 const resultFor = (results, game, date) => {
   const value = results.find(
@@ -154,9 +155,16 @@ export function Hero({ settings, games, results }) {
           <div className="row">
             <div className="col-md-12 text-center">
               <div className="homepage-date-title">
-                {settings?.homepageSeo?.heroTitle || "Satta King Fast Result"} –{" "}
-                {displayDate(now)} &amp;{" "}
-                {displayDate(yesterday)}
+                {hasSeoDateTag(settings?.homepageSeo?.heroTitle) ? (
+                  // Headline has its own {date} tags: show it exactly as written.
+                  fillSeoDates(settings.homepageSeo.heroTitle)
+                ) : (
+                  <>
+                    {settings?.homepageSeo?.heroTitle || "Satta King Fast Result"} –{" "}
+                    {displayDate(now)} &amp;{" "}
+                    {displayDate(yesterday)}
+                  </>
+                )}
               </div>
             </div>
           </div>
