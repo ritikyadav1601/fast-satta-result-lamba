@@ -21,10 +21,10 @@ const faqs = [
 ];
 const markets = [
   ["Desawar Satta Result", "Early Morning", "desawar"],
-  ["Shri Ganesh Result", "Mid-Afternoon", "shree-ganesh"],
+  ["Shri Ganesh Result", "Mid-Afternoon", "shri-ganesh"],
   ["Delhi Bazar Result", "Afternoon", "delhi-bazar"],
   ["Faridabad Satta Result", "Early Evening", "faridabad"],
-  ["Ghaziabad Satta Result", "Late Evening", "gaziabad"],
+  ["Ghaziabad Satta Result", "Late Evening", "ghaziabad"],
   ["Gali Satta Result", "Late Night / Midnight", "gali"],
 ];
 

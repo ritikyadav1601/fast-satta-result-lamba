@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { today } from "@/lib/store";
-import { gameSlug } from "@/lib/game-slug";
+import { chartSlugForGame } from "@/lib/game-slug";
 
 const dateKey = (value) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(value);
@@ -57,7 +57,7 @@ export default function ExtraGamesResults({ games, results }) {
           </thead>
           <tbody>
             {games.map((game) => {
-              const href = `/chart/${gameSlug(game.name)}`;
+              const href = `/chart/${chartSlugForGame({ name: game.name })}`;
               return (
                 <tr key={`${game.source || "extra"}-${game.id}`}>
                   <td className="foryellow">
