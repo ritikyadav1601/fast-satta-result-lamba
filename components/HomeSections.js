@@ -1,7 +1,8 @@
 import Link from "next/link";
 import LiveClock from "./LiveClock";
+import ChartFinder from "./ChartFinder";
 import { displayDate, today } from "@/lib/store";
-import { gameSlug } from "@/lib/game-slug";
+import { chartSlugForGame } from "@/lib/game-slug";
 import { fillSeoDates, hasSeoDateTag } from "@/lib/seo-date";
 
 const resultFor = (results, game, date) => {
@@ -45,7 +46,7 @@ const isSecondaryUpper = (game) =>
     game.englishName || game.english_name || ""
   );
 const chartHref = (game) =>
-  `/chart/${gameSlug(game.englishName || game.english_name || game.name)}`;
+  `/chart/${chartSlugForGame({ englishName: game.englishName || game.english_name, name: game.name })}`;
 const monthlyChartOrder = [
   "delhi bazar",
   "shree ganesh",
@@ -331,7 +332,7 @@ function TimingCard({ settings }) {
   );
 }
 
-export function ResultsAndCharts({ settings, games, results }) {
+export function ResultsAndCharts({ settings, games, results, finder }) {
   const now = new Date();
   const sorted = orderedGames(games);
   const gamesByMonthlyName = new Map(
@@ -464,6 +465,7 @@ export function ResultsAndCharts({ settings, games, results }) {
           King
         </p>
       </section>
+      {finder ? <ChartFinder {...finder} /> : null}
       <section className="octoberresultchart">
         <p style={{ fontSize: "1.17em", fontWeight: "bold", margin: "1em 0" }}>
           {now.getFullYear()}{" "}
