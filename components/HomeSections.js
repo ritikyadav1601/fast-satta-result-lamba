@@ -1,9 +1,9 @@
 import Link from "next/link";
 import LiveClock from "./LiveClock";
 import ChartFinder from "./ChartFinder";
-import { displayDate, today } from "@/lib/store";
+import { today } from "@/lib/store";
 import { chartSlugForGame } from "@/lib/game-slug";
-import { fillSeoDates, hasSeoDateTag } from "@/lib/seo-date";
+import { fillSeoDates } from "@/lib/seo-date";
 
 const resultFor = (results, game, date) => {
   const value = results.find(
@@ -156,16 +156,10 @@ export function Hero({ settings, games, results }) {
           <div className="row">
             <div className="col-md-12 text-center">
               <div className="homepage-date-title">
-                {hasSeoDateTag(settings?.homepageSeo?.heroTitle) ? (
-                  // Headline has its own {date} tags: show it exactly as written.
-                  fillSeoDates(settings.homepageSeo.heroTitle)
-                ) : (
-                  <>
-                    {settings?.homepageSeo?.heroTitle || "Satta King Fast Result"} –{" "}
-                    {displayDate(now)} &amp;{" "}
-                    {displayDate(yesterday)}
-                  </>
-                )}
+                {/* Show the headline exactly as written in the admin panel.
+                    Only {date}-style tags are filled in; nothing is added
+                    automatically, and an empty headline shows nothing. */}
+                {fillSeoDates(settings?.homepageSeo?.heroTitle || "")}
               </div>
             </div>
           </div>
