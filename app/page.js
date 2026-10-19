@@ -26,11 +26,14 @@ const dynamicDate = () =>
     year: "numeric",
     timeZone: "Asia/Kolkata",
   }).format(new Date());
-const withFullDate = (value, date) =>
-  fillSeoDates(value).replace(
+const withFullDate = (value, date) => {
+  const rendered = fillSeoDates(value);
+  if (/\{date\}/i.test(value)) return rendered;
+  return rendered.replace(
     /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/i,
     date,
   );
+};
 export async function generateMetadata() {
   const date = dynamicDate();
   const seo = (await getSettings())?.homepageSeo;
