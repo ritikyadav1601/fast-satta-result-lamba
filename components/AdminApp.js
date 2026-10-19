@@ -479,10 +479,10 @@ function HomepageSeoAdmin({ settings, busy, onSave }) {
           <code>{"Satta Result Today {date} | Fast Satta Result Live"}</code>
         </div>
         <label className="admin-field-wide">
-          Homepage headline (shown above the live date)
+          Homepage headline (shown exactly as written — leave empty to show nothing)
           <input
             name="heroTitle"
-            placeholder='e.g. Satta King Fast Result – {date} & {yesterday} (without tags, today & yesterday dates are added automatically)'
+            placeholder='e.g. Satta King Fast Result – {date} & {yesterday} (dates show only if you add the tags)'
             defaultValue={seo.heroTitle || ""}
           />
         </label>
