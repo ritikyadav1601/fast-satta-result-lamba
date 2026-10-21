@@ -1,7 +1,9 @@
 // Bundled (not @import-ed) so the browser gets one CSS file instead of a
 // serial HTML -> globals.css -> main.css chain that delays first paint.
-import "@/public/assets/css/main.css";
-import "./globals.css";
+import '@/public/assets/css/main.css';
+import './globals.css';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+
 
 export const metadata = {
   metadataBase: new URL("https://www.fast-satta-result.com"),
@@ -26,9 +28,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+  return <html lang="en"><body>{children}<GoogleAnalytics /></body></html>;
+
 }

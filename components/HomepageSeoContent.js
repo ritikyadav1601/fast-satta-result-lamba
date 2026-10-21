@@ -236,13 +236,18 @@ export function defaultHomepageSeoDescription(date) {
   return `Get the latest Fast Satta Result Today (${date}) live. View real-time Satta Result Live records, and track historical Satta King Chart data instantly.`;
 }
 
+const demoteH1 = (html, hasHeroH1) =>
+  hasHeroH1 ? html.replace(/<(\/?)h1\b/gi, "<$1h2") : html;
+
 export default function HomepageSeoContent({ date, settings }) {
   const seo = settings?.homepageSeo;
   const usingCustomContent = Boolean(seo?.contentHtml && seo.contentHtml.trim());
   const rawHtml = fillSeoDates(
     usingCustomContent ? seo.contentHtml : DEFAULT_HOMEPAGE_SEO_HTML
   );
-  const html = safeBlogHtml(rawHtml);
+  // Exactly one <h1> per page: when the admin headline (rendered as <h1> in
+  // the hero) is set, any <h1> inside the SEO text becomes an <h2>.
+  const html = demoteH1(safeBlogHtml(rawHtml), Boolean(seo?.heroTitle?.trim()));
   const title = (seo?.metaTitle && fillSeoDates(seo.metaTitle.trim())) || defaultHomepageSeoTitle(date);
   const description =
     (seo?.metaDescription && fillSeoDates(seo.metaDescription.trim())) ||
