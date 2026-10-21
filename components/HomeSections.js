@@ -155,12 +155,16 @@ export function Hero({ settings, games, results }) {
         <div className="container">
           <div className="row">
             <div className="col-md-12 text-center">
-              <div className="homepage-date-title">
-                {/* Show the headline exactly as written in the admin panel.
-                    Only {date}-style tags are filled in; nothing is added
-                    automatically, and an empty headline shows nothing. */}
-                {fillSeoDates(settings?.homepageSeo?.heroTitle || "")}
-              </div>
+              {/* Show the headline exactly as written in the admin panel.
+                  Only {date}-style tags are filled in; nothing is added
+                  automatically, and an empty headline shows nothing.
+                  It is the homepage's one <h1> (HomepageSeoContent demotes
+                  any <h1> in the SEO text to <h2> when a headline is set). */}
+              {settings?.homepageSeo?.heroTitle?.trim() ? (
+                <h1 className="homepage-date-title">
+                  {fillSeoDates(settings.homepageSeo.heroTitle)}
+                </h1>
+              ) : null}
             </div>
           </div>
         </div>
@@ -243,6 +247,7 @@ export function Hero({ settings, games, results }) {
                   <WaitResult />
                 )}
               </strong>
+              <DisawarWhatsApp settings={settings} />
             </div>
           </div>
         </section>
@@ -250,6 +255,29 @@ export function Hero({ settings, games, results }) {
       <ChannelCards />
       <TimingCard settings={settings} games={games} />
     </>
+  );
+}
+
+// WhatsApp button under the Disawar result. Uses the khaiwal WhatsApp number
+// from the admin panel; hidden when no number is set.
+function DisawarWhatsApp({ settings }) {
+  const number = String(settings?.whatsapp_number || "").replace(/\D/g, "");
+  if (!number) return null;
+  return (
+    <p className="disawar-whatsapp">
+      <a
+        href={`https://wa.me/${number}`}
+        aria-label="Chat on WhatsApp"
+        data-wa-location="under_disawar"
+      >
+        <img
+          src="/assets/img/whatsapp.png"
+          width="200"
+          height="69"
+          alt="WhatsApp"
+        />
+      </a>
+    </p>
   );
 }
 
@@ -266,7 +294,7 @@ function ChannelCards() {
         करे&nbsp; &nbsp;
       </p>
       <p>
-        <a href="https://whatsapp.com/channel/0029Vb9zF4R7NoZycbDiKC25">
+        <a href="https://whatsapp.com/channel/0029Vb9zF4R7NoZycbDiKC25" data-wa-location="channel">
           <img
             src="/assets/img/whatsapp.png"
             alt="Whatsapp to show game on this website"
@@ -311,6 +339,7 @@ function TimingCard({ settings }) {
             <a
               href={`https://wa.me/${whatsappNumber}`}
               aria-label={`Chat with ${name} on WhatsApp`}
+              data-wa-location="khaiwal_box"
             >
               <img
                 src="/assets/img/whatsapp.png"
@@ -430,7 +459,7 @@ export function ResultsAndCharts({ settings, games, results, finder }) {
         </p>
         <p>----{(settings.owner_name || "").toUpperCase()} ----</p>
         <p>
-          <a href={`https://wa.me/${settings.owner_number || ""}`}>
+          <a href={`https://wa.me/${settings.owner_number || ""}`} data-wa-location="owner_contact">
             <img src="/assets/img/whatsapp.png" alt="WhatsApp" width="200" height="69" loading="lazy" />
           </a>
         </p>

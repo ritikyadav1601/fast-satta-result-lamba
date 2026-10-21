@@ -46,7 +46,7 @@ const loadChart=unstable_cache(async slug=>{
   else if(legacyGame)data={name:legacyGame.name,results:legacyRows};
   if(!data)return null;
   return {name:data.name,englishName:legacyGame?.englishName||legacyGame?.english_name||'',rows:data.results.filter(row=>row.result!=null&&String(row.result).trim()!=='').map(row=>[String(row.date),row.result])};
-},['chart-by-slug-v2'],{revalidate:60});
+},['chart-by-slug-v3'],{revalidate:60});
 
 const yearNow=()=>Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Kolkata'}).format(new Date()));
 const ascii=v=>/^[\x00-\x7F]*$/.test(String(v||''))&&String(v||'').trim();
