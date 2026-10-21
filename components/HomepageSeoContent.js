@@ -1,5 +1,5 @@
 import { safeBlogHtml } from "@/lib/blog-content";
-import { fillSeoDates } from "@/lib/seo-date";
+import { fillSeoDates, seoDateValues } from "@/lib/seo-date";
 
 const faqs = [
   [
@@ -252,6 +252,7 @@ export default function HomepageSeoContent({ date, settings }) {
   const description =
     (seo?.metaDescription && fillSeoDates(seo.metaDescription.trim())) ||
     defaultHomepageSeoDescription(date);
+  const dateModified = seoDateValues().isoDate;
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -262,15 +263,25 @@ export default function HomepageSeoContent({ date, settings }) {
         name: "Fast Satta Result",
         description:
           "Public informational directory for Fast Satta King Result updates, schedules, and historical data charts.",
+        publisher: { "@id": "https://www.fast-satta-result.com/#organization" },
         inLanguage: "en-IN",
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.fast-satta-result.com/#organization",
+        name: "Fast Satta Result",
+        url: "https://www.fast-satta-result.com/",
       },
       {
         "@type": "WebPage",
         "@id": "https://www.fast-satta-result.com/#webpage",
         url: "https://www.fast-satta-result.com/",
         name: title,
+        headline: title,
         isPartOf: { "@id": "https://www.fast-satta-result.com/#website" },
+        publisher: { "@id": "https://www.fast-satta-result.com/#organization" },
         description,
+        dateModified,
         inLanguage: "en-IN",
       },
       ...(usingCustomContent
