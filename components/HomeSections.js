@@ -397,7 +397,12 @@ export function ResultsAndCharts({ settings, games, results, finder }) {
       {games.length > 0 && (
         <>
           {[
-            sorted.filter((g) => !isDesawar(g) && !isSecondaryUpper(g)),
+            // Desawar goes last (after Gali): its 1:30 AM result closes the day,
+            // so sorting by time would wrongly put it at the top.
+            [
+              ...sorted.filter((g) => !isDesawar(g) && !isSecondaryUpper(g)),
+              ...sorted.filter(isDesawar),
+            ],
             sorted.filter(isSecondaryUpper),
           ].map((group, index) =>
             group.length ? (
@@ -420,7 +425,7 @@ export function ResultsAndCharts({ settings, games, results, finder }) {
                         <tr key={g.id}>
                           <td className="foryellow">
                             <Link className="gamenameeach" href={chartHref(g)}>
-                              <strong>{g.name}</strong>
+                              <strong>{isDesawar(g) ? "दिसावर" : g.name}</strong>
                             </Link>
                             <br />
                             <strong>
