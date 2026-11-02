@@ -13,7 +13,6 @@ import {getChartFinderOptions} from '@/lib/chart-finder';
 // Charts must combine every source: MONGO_URI (legacy games + admin-entered results), MAIN and EXTRA databases.
 // Each game has ONE public URL: misspelled legacy slugs (gaziabad, disawar, shree-ganesh, …) 301 to the
 // correct spelling, and the legacy game is found from the correct spelling via legacySlugsFor().
-const mergeByDate=(...lists)=>{const merged=new Map();for(const list of lists)for(const row of list)if(row.result!=null&&String(row.result).trim()!=='')merged.set(row.date,row);return [...merged.values()]};
 
 export const dynamic = 'force-dynamic';
 const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -25,28 +24,7 @@ const dateTitle = () => {
   return `Satta King Fast Result – ${format(now)} & ${format(yesterday)}`;
 };
 
-const findLegacyGame=(games,slug)=>{const slugs=legacySlugsFor(slug);return games.find(item=>item.status!==false&&slugs.some(s=>item.slug===s||gameSlug(item.englishName||item.english_name||item.name)===s))};
-
-// Loading every result from three databases took 3-10 s per chart page, which slowed Googlebot
-// ("Discovered - currently not indexed"). Cache the merged chart for 60 s per game.
-const loadChart=unstable_cache(async slug=>{
-  const legacyGame=findLegacyGame(await getGames(),slug);
-  const legacyRows=legacyGame?await getGameResults(legacyGame.id):[];
-  let external=null;
-  for(const candidate of legacySlugsFor(slug)){
-    external=await getMainGameBySlug(candidate).catch(()=>null)||await getExtraGameBySlug(candidate).catch(()=>null);
-    if(external)break;
-  }
-  let data=null;
-  if(external&&legacyGame){
-    // Games managed in the admin panel keep MONGO_URI as the source of truth; otherwise the newer MAIN/EXTRA data wins.
-    const adminGame=ADMIN_GAME_IDS.includes(Number(legacyGame.id));
-    data={name:legacySlugsFor(slug).length>1?legacyGame.name:external.game.name,results:adminGame?mergeByDate(external.results,legacyRows):mergeByDate(legacyRows,external.results)};
-  }else if(external)data={name:external.game.name,results:external.results};
-  else if(legacyGame)data={name:legacyGame.name,results:legacyRows};
-  if(!data)return null;
-  return {name:data.name,englishName:legacyGame?.englishName||legacyGame?.english_name||'',rows:data.results.filter(row=>row.result!=null&&String(row.result).trim()!=='').map(row=>[String(row.date),row.result])};
-},['chart-by-slug-v3'],{revalidate:60});
+import {loadChart} from '@/lib/chart-data';
 
 const yearNow=()=>Number(new Intl.DateTimeFormat('en',{year:'numeric',timeZone:'Asia/Kolkata'}).format(new Date()));
 const ascii=v=>/^[\x00-\x7F]*$/.test(String(v||''))&&String(v||'').trim();
@@ -67,7 +45,7 @@ export default async function NamedGameChart({params,searchParams}) {
   const {game_name:rawSlug}=await params,query=await searchParams;
   const slug=decodeURIComponent(rawSlug);
   if(chartSlugAlias[slug]){
-    const requested=/^\d{4}$/.test(String(query?.year||''))?`?year=${query.year}`:'';
+    const qs=new URLSearchParams();if(/^\d{4}$/.test(String(query?.year||'')))qs.set('year',query.year);if(/^(?:[1-9]|1[0-2])$/.test(String(query?.month||'')))qs.set('month',query.month);const requested=qs.toString()?`?${qs}`:'';
     permanentRedirect(`/chart/${encodeURIComponent(chartSlugAlias[slug])}${requested}`);
   }
   const [chart,finder]=await Promise.all([loadChart(slug),getChartFinderOptions()]);
@@ -77,5 +55,12 @@ export default async function NamedGameChart({params,searchParams}) {
   const results=new Map(chart.rows.filter(([date])=>Number(date.slice(0,4))===year));
   const href=`/chart/${slug}`;
   const name=displayName(chart,slug);
+  const monthNum=/^(?:[1-9]|1[0-2])$/.test(String(query?.month||''))?Number(query.month):0;
+  if(monthNum){
+    const monthName=new Date(Date.UTC(2000,monthNum-1,1)).toLocaleString('en-US',{month:'long',timeZone:'UTC'});
+    const daysInMonth=new Date(Date.UTC(year,monthNum,0)).getUTCDate();
+    const mm=String(monthNum).padStart(2,'0');
+    return <SiteChrome active="chart"><div className="chart-date-band"><p>{dateTitle()}</p></div><main className="year-chart-page"><section className="year-chart-header"><h1>{chart.name} {monthName.toUpperCase()} {year} CHART</h1><a className="month-chart-full-link" href={`${href}?year=${year}`}>View full {year} chart</a></section><ChartFinder {...finder} game={slug} year={year} month={monthNum} heading={false}/>{years.length?<div className="month-table-wrap"><table className="year-result-table month-result-table"><caption className="sr-only">{name} satta result chart {monthName} {year}</caption><thead><tr><th>Date</th><th>{name}</th></tr></thead><tbody>{Array.from({length:daysInMonth},(_,index)=>index+1).map(day=>{const dd=String(day).padStart(2,'0');return <tr key={day}><th scope="row">{dd}-{mm}-{year}</th><td>{showResult(results.get(`${year}-${mm}-${dd}`))}</td></tr>})}</tbody></table></div>:<div className="empty-state">No results are available for this game.</div>}<section className="chart-seo-text"><h2>{name} Satta Chart {monthName} {year}</h2><p>This page shows the {name} satta result record for {monthName} {year}, day by day. “--” means no result was published for that date. Open the <a href={`${href}?year=${year}`}>full {year} {name} chart</a> or use the chart picker above to check another month, year or game.</p></section></main></SiteChrome>;
+  }
   return <SiteChrome active="chart"><div className="chart-date-band"><p>{dateTitle()}</p></div><main className="year-chart-page"><section className="year-chart-header"><h1>{chart.name} YEARLY CHART</h1>{years.length?<ChartYearSelect href={href} years={years} value={year}/>:null}</section><ChartFinder {...finder} game={slug} year={year} heading={false}/>{years.length?<div className="year-table-scroll"><table className="year-result-table"><caption className="sr-only">{name} satta result chart {year}</caption><thead><tr><th aria-label="Day"></th>{months.map(month=><th key={month}>{month}</th>)}</tr></thead><tbody>{Array.from({length:31},(_,index)=>index+1).map(day=><tr key={day}><th scope="row">{day}</th>{months.map((month,monthIndex)=>{const date=`${year}-${String(monthIndex+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;return <td key={month}>{showResult(results.get(date))}</td>})}</tr>)}</tbody></table></div>:<div className="empty-state">No results are available for this game.</div>}<section className="chart-seo-text"><h2>{name} Satta Chart {year}</h2><p>This page shows the complete {name} satta result record for {year}, arranged day by day for every month. Each cell is the declared {name} result for that date; “--” means no result was published. Use the year selector or the chart picker above to open older {name} charts, and see the <a href="/chart">full Satta King chart list</a> for other games.</p></section></main></SiteChrome>;
 }

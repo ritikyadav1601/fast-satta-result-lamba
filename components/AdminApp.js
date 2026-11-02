@@ -487,6 +487,23 @@ function HomepageSeoAdmin({ settings, busy, onSave }) {
           />
         </label>
         <label className="admin-field-wide">
+          Top scrolling text (moving line below the menu — leave empty to use the default text)
+          <textarea
+            name="marqueeText"
+            rows="2"
+            placeholder="Fast Satta Result Today – Check Latest Available Satta Results for Gali, Disawar, Ghaziabad, Faridabad & More | Explore Daily Updates, Satta King Charts and Historical Result Records in One Place."
+            defaultValue={seo.marqueeText || ""}
+          />
+        </label>
+        <label className="admin-field-wide">
+          Chart picker heading (leave empty to use &quot;SATTA RECORD CHART {"{year}"}&quot;)
+          <input
+            name="chartFinderTitle"
+            placeholder="e.g. SATTA RECORD CHART {year}"
+            defaultValue={seo.chartFinderTitle || ""}
+          />
+        </label>
+        <label className="admin-field-wide">
           Meta title
           <input
             name="metaTitle"

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/store";
+import { fillSeoDates } from "@/lib/seo-date";
 
 // Scrolling header text (same on every page). Replaces the old database text
 // ("…Leak Numbers… 2019 Chart…"), which had no admin field to edit it.
@@ -7,6 +8,8 @@ const MARQUEE_TEXT =
   "Fast Satta Result Today – Check Latest Available Satta Results for Gali, Disawar, Ghaziabad, Faridabad & More | Explore Daily Updates, Satta King Charts and Historical Result Records in One Place.";
 
 export function Header({ active = "home", settings }) {
+  const customMarquee = settings?.homepageSeo?.marqueeText?.trim();
+  const marqueeText = customMarquee ? fillSeoDates(customMarquee) : MARQUEE_TEXT;
   return (
     <section className="topboxnew">
       <div className="container-fluid">
@@ -31,7 +34,7 @@ export function Header({ active = "home", settings }) {
           <div className="text_slide">
             <marquee style={{ color: "#fff" }}>
               <p style={{ fontSize: 16, textAlign: "center" }}>
-                {MARQUEE_TEXT}
+                {marqueeText}
               </p>
             </marquee>
           </div>
