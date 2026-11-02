@@ -1,6 +1,7 @@
 import Link from "next/link";
 import LiveClock from "./LiveClock";
 import ChartFinder from "./ChartFinder";
+import HomeMonthChart from "./HomeMonthChart";
 import { today } from "@/lib/store";
 import { chartSlugForGame } from "@/lib/game-slug";
 import { fillSeoDates } from "@/lib/seo-date";
@@ -383,6 +384,22 @@ export function ResultsAndCharts({ settings, games, results, finder }) {
       "0"
     )}-${String(i + 1).padStart(2, "0")}`,
   }));
+  // Data for the client-side month chart (Last Month / Next Month buttons).
+  const monthChartGames = chartGames.map((g) => ({
+    slug: chartSlugForGame({ englishName: g.englishName || g.english_name, name: g.name }),
+    name: String(g.name || ""),
+    id: String(g.id),
+  }));
+  const monthChartResults = {};
+  for (const g of monthChartGames) {
+    const rows = {};
+    for (const row of results) {
+      if (String(row.gameId) !== g.id || !String(row.date || "").startsWith(today().slice(0, 7))) continue;
+      if (row.result == null || row.result === "") continue;
+      rows[row.date] = row.result === 100 ? "00" : String(row.result);
+    }
+    monthChartResults[g.slug] = rows;
+  }
   return (
     <>
       <section className="octoberresultchart">
@@ -482,67 +499,22 @@ export function ResultsAndCharts({ settings, games, results, finder }) {
           </a>
         </p>
       </div>
-      <section className="octoberresultchart">
-        <div className="result-chart-title">
-          Fast Satta Result – Live {now.getFullYear()} Updates
-        </div>
-      </section>
-      <section className="octoberresultchart">
-        <p style={{ fontSize: "1.5em", fontWeight: "bold", margin: "0.83em 0" }}>
-          Today Satta Result, Gali Satta King, Desawar Satta King, Fast Satta
-          King
-        </p>
-      </section>
-      {finder ? <ChartFinder {...finder} /> : null}
-      <section className="octoberresultchart">
-        <p style={{ fontSize: "1.17em", fontWeight: "bold", margin: "1em 0" }}>
-          {now.getFullYear()}{" "}
-          {now.toLocaleString("en-US", { month: "long" }).toUpperCase()} RESULT
-          CHART
-        </p>
-      </section>
-      <section className="newtable">
-        <div className="table-responsive marginBottom">
-          <table className="table table-bordered table-extra">
-            <thead>
-              <tr>
-                <td className="table_chart_section_01 forfirtcolor date text-center">
-                  <strong className="fon">Date</strong>
-                </td>
-                {chartGames.map((g) => (
-                  <td
-                    className="table_chart_section forfirtcolor text-center"
-                    key={g.id}
-                  >
-                    {g.name.toUpperCase()}
-                  </td>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {days.map((day) => (
-                <tr key={day.date}>
-                  <td className="forfirtcolor text-center">
-                    <span className="fon">{day.label}</span>
-                  </td>
-                  {chartGames.map((g) => (
-                    <td key={g.id}>
-                      <span className="table_chart_section_02">
-                        {day.date === today() &&
-                        !hasResult(results, g, day.date) ? (
-                          <WaitResult />
-                        ) : (
-                          resultFor(results, g, day.date)
-                        )}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <HomeMonthChart
+        games={monthChartGames}
+        initialResults={monthChartResults}
+        todayIso={today()}
+      />
+      {finder ? (
+        <ChartFinder
+          {...finder}
+          month={now.getMonth() + 1}
+          title={
+            settings?.homepageSeo?.chartFinderTitle?.trim()
+              ? fillSeoDates(settings.homepageSeo.chartFinderTitle.trim())
+              : ""
+          }
+        />
+      ) : null}
     </>
   );
 }
