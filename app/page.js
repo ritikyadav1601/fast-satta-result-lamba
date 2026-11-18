@@ -26,14 +26,6 @@ const dynamicDate = () =>
     year: "numeric",
     timeZone: "Asia/Kolkata",
   }).format(new Date());
-const withFullDate = (value, date) => {
-  const rendered = fillSeoDates(value);
-  if (/\{date\}/i.test(value)) return rendered;
-  return rendered.replace(
-    /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/i,
-    date,
-  );
-};
 export async function generateMetadata() {
   const date = dynamicDate();
   const seo = (await getSettings())?.homepageSeo;
@@ -41,7 +33,7 @@ export async function generateMetadata() {
     (seo?.metaTitle && fillSeoDates(seo.metaTitle.trim())) ||
     `Satta Result Today ${date} | Fast Satta Result Live`;
   const description =
-    (seo?.metaDescription && withFullDate(seo.metaDescription.trim(), date)) ||
+    (seo?.metaDescription && fillSeoDates(seo.metaDescription.trim())) ||
     `Get the latest Fast Satta Result Today (${date}) live. Access real-time Satta Result Live records, and track historical Satta King Chart data instantly.`;
   return {
     title,
