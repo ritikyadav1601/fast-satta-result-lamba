@@ -7,12 +7,6 @@ import {getChartFinderOptions} from '@/lib/chart-finder';
 
 export const revalidate = 300;
 
-const dateTitle = () => {
-  const now = new Date();
-  const yesterday = new Date(now.getTime() - 86400000);
-  const format = value => new Intl.DateTimeFormat('en-GB', { day:'2-digit', month:'long', year:'numeric', timeZone:'Asia/Kolkata' }).format(value).replace(/ (\d{4})$/, ', $1');
-  return `Satta King Fast Result – ${format(now)} & ${format(yesterday)}`;
-};
 
 export const metadata = { title: 'Satta King Chart 2026 – All Game Result Charts | Fast Satta Result', description: 'Satta King chart for every game: Gali, Desawar, Faridabad, Ghaziabad, Delhi Bazar, Shri Ganesh and more. Open a game to see its full yearly result record.', alternates: { canonical: '/chart' } };
 
@@ -23,11 +17,10 @@ export default async function Chart() {
   const years = [...new Set(index.keys.map(key => Number(key.split(':')[1])).filter(Boolean))].sort((a, b) => b - a);
 
   return <SiteChrome active="chart">
-    <div className="chart-date-band"><p>{dateTitle()}</p></div>
+    <div className="chart-date-band"><h1>Satta King Chart {years[0]} – Satta Result Chart &amp; Old Charts</h1></div>
     <main className="chart-page">
       <section className="chart-intro">
-        <h1>Satta King Chart {years[0]} – Satta Result Chart &amp; Old Charts</h1>
-        <p className="chart-intro-text">Select any game below to open its full yearly result chart. Every chart lists the declared result for each day of the month, from January to December, with older years available in the table.</p>
+        <p className="chart-intro-text" style={{marginTop:0}}>Select any game below to open its full yearly result chart. Every chart lists the declared result for each day of the month, from January to December, with older years available in the table.</p>
       </section>
       <ChartFinder {...finder}/>
       <section className="chart-gradient-heading"><h2>Gali Chart, Desawar History</h2></section>
